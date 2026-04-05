@@ -53,7 +53,7 @@ case "$SCOPE" in
     TARGET_DIR="$(pwd)/.vscode/prompts/Agents"
     ;;
   env)
-    TARGET_DIR="$HOME/.config/Code/User/prompts/Agents"
+    TARGET_DIR="$HOME/.copilot/agents"
     ;;
   *)
     echo "Invalid scope: $SCOPE" >&2
