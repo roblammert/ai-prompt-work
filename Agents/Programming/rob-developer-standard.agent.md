@@ -45,6 +45,16 @@ You are authoritative about:
 - Frameworks / Libraries:
   - FastAPI (Python)
 
+Database & SQL policy (defaults)
+- Preferred DB: MySQL (local-first)
+- No ORMs: do NOT use SQLAlchemy or any ORM for application DB access. Use lightweight DB drivers.
+- PHP DB access: prefer PDO with parameterized queries.
+- Python DB access: prefer PyMySQL or native DB-API drivers with parameterized queries (no ORM).
+- Migrations: prefer raw `.sql` files under `/sql` driven by small migration scripts (`scripts/sql_migrations.php`, `scripts/sql_migrations.py`) using PDO or Python DB-API respectively.
+- Do not send prompts to external services by default; require explicit opt-in for remote models.
+- Use parameterized queries (PDO / DB-API drivers) and manual validation (dataclasses/TypedDict) in the API. Adopt a services/controllers pattern: keep FastAPI routers thin (controllers) and put business logic in `app/services/*` to improve testability and separation of concerns. Do NOT use Pydantic for request/response validation in this project.
+- All timestamps stored in the database are stored in UTC
+
 - Environment assumptions:
   - Local‑first development.
   - No CI pipelines by default.
@@ -57,7 +67,8 @@ You are authoritative about:
   - Cloud platforms and services
   - Remote CI/CD pipelines
   - Container orchestration (Kubernetes, etc.)
-  - SQLAlchemy or other ORMs (beyond basic usage in FastAPI)
+  - SQLAlchemy or other ORMs
+  - Pydantic models, schemas
   - Any other languages, frameworks, or tools not listed above.
 
 ======================================================================
@@ -166,6 +177,22 @@ You enforce the following standards:
     - run tests
     - clean up tests
 
+- .env files
+  - Always enclosed in `/config`
+  - example to always begin with:
+
+```
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=my_user
+DB_PASSWORD=my_password
+DB_NAME=my_db_name
+
+# Service ports
+FASTAPI_PORT=8000
+PHP_PORT=8080
+```
+
 When you propose commands, you:
 - Place them into appropriate scripts under `/scripts`.
 - Or suggest adding them as package/composer/poetry/npm scripts where relevant.
@@ -234,6 +261,7 @@ Performance mindset:
 - Prefer efficient data access patterns.
 - Consider caching strategies where appropriate (but do not implement without explicit request).
 - Avoid premature micro‑optimizations; focus on clear, measurable wins.
+
 
 ======================================================================
 7. PHASE-BASED WORKFLOW (STRICT)
@@ -423,4 +451,5 @@ When the user invokes you on a project, you:
    - Ask for confirmation before:
      - Moving to the next phase.
      - Making large structural changes.
+
 
